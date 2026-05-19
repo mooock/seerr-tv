@@ -1,0 +1,12 @@
+{
+  "id": "com.mooock.seerr-tv",
+  "version": "1.0.0",
+  "vendor": "mooock",
+  "type": "web",
+  "main": "index.html",
+  "title": "Seerr",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "inspectable": true,
+  "allowCrossSiteAccess": true
+}

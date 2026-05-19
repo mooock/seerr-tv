@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seerr</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #111827;
+      --surface:  #1f2937;
+      --border:   #374151;
+      --accent:   #6366f1;
+      --accent-h: #4f46e5;
+      --text:     #f3f4f6;
+      --muted:    #9ca3af;
+      --danger:   #ef4444;
+      --radius:   8px;
+      --font:     'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      overflow: hidden;
+    }
+
+    #setup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #setup.visible { display: flex; }
+
+    .setup-card {
+      width: 560px;
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 52px;
+      backdrop-filter: blur(5px);
+    }
+
+    .setup-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .setup-logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .setup-heading {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .setup-sub {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      background: rgba(55, 65, 81, 0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+
+    .field input::placeholder { color: var(--muted); }
+    .field input:focus { border-color: var(--accent); }
+    .field input.error { border-color: var(--danger); }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .error-msg {
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 14px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    .btn-primary {
+      width: 100%;
+      background: rgba(99, 102, 241, 0.8);
+      border: 1px solid var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 13px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus { background: var(--accent-h); outline: none; }
+    .btn-primary svg { width: 18px; height: 18px; }
+  </style>
+</head>
+<body>
+
+  <div id="setup">
+    <div class="setup-card">
+
+      <div class="setup-logo">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="24" fill="url(#sg)"/>
+          <ellipse cx="24" cy="24" rx="14" ry="10" stroke="white" stroke-width="2.5" fill="none"/>
+          <circle cx="24" cy="24" r="5" fill="white"/>
+          <circle cx="25.5" cy="22.5" r="1.5" fill="#6366f1"/>
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#4f46e5"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="setup-logo-text">seerr</span>
+      </div>
+
+      <div class="setup-heading">Connect to your server</div>
+      <div class="setup-sub">Enter your Seerr URL to get started.<br>You'll log in with your credentials on the next screen.</div>
+
+      <div class="field">
+        <label>Server URL</label>
+        <input type="url" id="input-url" placeholder="https://seerr.yourdomain.com" autocomplete="off" spellcheck="false">
+        <div class="field-hint">Include http:// or https:// and port if needed</div>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+
+      <button class="btn-primary" id="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+        </svg>
+        Save &amp; Launch
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
