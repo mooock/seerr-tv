@@ -1,6 +1,6 @@
 # Seerr TV
 
-A native webOS app for LG Smart TVs that wraps [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) / [Overseerr](https://github.com/sct/overseerr) with one key improvement — the **Watch Trailer** button plays trailers in an inline YouTube player instead of redirecting to the broken TV YouTube app.
+A native webOS app for LG Smart TVs that wraps [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) / [Overseerr](https://github.com/sct/overseerr) with key improvements over using the browser directly.
 
 ![Seerr](com.mooock.seerr-tv/icon.png)
 
@@ -10,8 +10,10 @@ A native webOS app for LG Smart TVs that wraps [Jellyseerr](https://github.com/F
 
 - First-launch setup wizard to configure your Seerr server URL
 - Session persistence — stays logged in between launches just like the LG browser
-- Intercepts Watch Trailer links and plays them fullscreen in an inline YouTube player
+- Intercepts Watch Trailer links and plays them fullscreen in an inline YouTube player instead of redirecting to the broken TV YouTube app
 - Back button closes the trailer and returns to the movie/series page
+- Magic remote scroll wheel support for page scrolling
+- D-pad left/right navigation for scrolling movie rows — hover over a row with the magic remote then use the D-pad to scroll
 - No ads, no tracking, no bloat
 
 ---
@@ -21,10 +23,11 @@ A native webOS app for LG Smart TVs that wraps [Jellyseerr](https://github.com/F
 - LG Smart TV running webOS 4.x or higher
 - Rooted TV with [Homebrew Channel](https://github.com/webosbrew/webos-homebrew-channel) installed, **or** Developer Mode enabled
 - A running Jellyseerr or Overseerr instance accessible from your TV's network
+- Magic remote required for navigation (pointer-based UI)
 
 ### Reverse proxy note
 
-If your Seerr instance is behind a reverse proxy (e.g. Nginx Proxy Manager), you need to add the following to your proxy host's advanced config to allow session cookies to work inside the app:
+If your Seerr instance is behind a reverse proxy (e.g. Nginx Proxy Manager), add the following to your proxy host's advanced config to allow session cookies to work inside the app:
 
 ```nginx
 proxy_cookie_flags connect.sid samesite=none;
@@ -41,13 +44,15 @@ Search for **Seerr** in the Homebrew Channel app on your TV.
 ### Manual install
 
 1. Download the latest `.ipk` from [Releases](https://github.com/mooock/seerr-tv/releases)
-2. Transfer it to your TV (SSH/SFTP)
+2. Transfer it to your TV via SSH/SFTP to `/tmp/`
 3. Install via SSH:
 
 ```bash
 luna-send-pub -i 'luna://com.webos.appInstallService/dev/install' \
-  '{"id":"com.mooock.seerr-tv","ipkUrl":"/tmp/com.mooock.seerr-tv_1.0.0_all.ipk","subscribe":true}'
+  '{"id":"com.mooock.seerr-tv","ipkUrl":"/tmp/com.mooock.seerr-tv_1.0.1_all.ipk","subscribe":true}'
 ```
+
+Press Ctrl+C when you see `"state":"installed"`.
 
 ---
 
@@ -55,7 +60,6 @@ luna-send-pub -i 'luna://com.webos.appInstallService/dev/install' \
 
 ```
 seerr-tv/
-├── bin/                          Built IPK files
 ├── com.mooock.seerr-tv/          App source
 │   ├── appinfo.json              webOS app manifest
 │   ├── index.html                Setup wizard
@@ -63,8 +67,9 @@ seerr-tv/
 │   ├── icon.png                  80×80 app icon
 │   ├── largeIcon.png             130×130 app icon
 │   └── webOSUserScripts/
-│       └── userScript.js         YouTube trailer interceptor
-├── source/                       Source assets (SVG icons)
+│       └── userScript.js         YouTube trailer interceptor + D-pad navigation
+├── .gitignore
+├── README.md
 └── com.mooock.seerr-tv.manifest.json   Homebrew Channel manifest
 ```
 
