@@ -3,8 +3,21 @@
 
   var OVERLAY_ID = 'seerr-tv-yt-overlay';
   var trailerOpen = false;
+  var lastRow = null;
 
   if (window.top !== window) return;
+
+  // Track last hovered row — locked in so D-pad keeps scrolling it after cursor hides
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target;
+    while (el) {
+      if (el.classList && el.classList.contains('hide-scrollbar')) {
+        lastRow = el;
+        return;
+      }
+      el = el.parentElement;
+    }
+  }, true);
 
   function extractYouTubeId(url) {
     if (!url) return null;
@@ -18,6 +31,24 @@
     }
     return null;
   }
+
+  // Arrow key / D-pad navigation
+  document.addEventListener('keydown', function (e) {
+    if (trailerOpen) return;
+    var key = e.keyCode;
+
+    if (key === 37 || key === 39) {
+      // Left/Right — scroll last hovered row directly
+      if (!lastRow) return;
+      e.preventDefault();
+      lastRow.scrollBy({ left: key === 39 ? 200 : -200, behavior: 'smooth' });
+    } else if (key === 38 || key === 40) {
+      // Up/Down — scroll page
+      e.preventDefault();
+      window.scrollBy({ top: key === 40 ? 300 : -300, behavior: 'smooth' });
+      lastRow = null;
+    }
+  }, true);
 
   function ensureOverlay() {
     if (document.getElementById(OVERLAY_ID)) return;
@@ -43,7 +74,6 @@
 
     var overlay = document.createElement('div');
     overlay.id = OVERLAY_ID;
-    overlay.tabIndex = -1;
     overlay.innerHTML = [
       '<div id="seerr-tv-yt-blocker"></div>',
       '<button id="seerr-tv-yt-close">&#x2715; Close (Back)</button>'
@@ -51,11 +81,9 @@
     document.body.appendChild(overlay);
 
     document.getElementById('seerr-tv-yt-close').addEventListener('click', function () {
-      // Close button: destroy frame, hide overlay, then consume both pushed states
       destroyFrame();
       document.getElementById(OVERLAY_ID).classList.remove('open');
       trailerOpen = false;
-      // Go back twice to clean up both pushed states
       history.go(-2);
     });
   }
@@ -80,8 +108,6 @@
   function openTrailer(videoId) {
     ensureOverlay();
     if (!trailerOpen) {
-      // Push two states — webOS intercepts first Back at system level,
-      // second Back fires popstate which we handle
       history.pushState({ seerrTrailer: true }, '');
       history.pushState({ seerrTrailer: true }, '');
     }
@@ -91,17 +117,31 @@
     document.getElementById('seerr-tv-yt-close').focus();
   }
 
-  // Back button via popstate — fires on second Back press (first is intercepted by webOS)
-  // At this point one state is already consumed, we need to consume the remaining one too
   window.addEventListener('popstate', function (e) {
     if (trailerOpen) {
       destroyFrame();
       document.getElementById(OVERLAY_ID).classList.remove('open');
       trailerOpen = false;
-      // Consume the remaining pushed state so next Back navigates Seerr normally
       history.back();
     }
   });
+
+  // webOS magic remote scroll wheel
+  document.addEventListener('wheel', function (e) {
+    if (trailerOpen) return;
+    e.preventDefault();
+    var el = e.target;
+    while (el && el !== document.body) {
+      var style = window.getComputedStyle(el);
+      var overflow = style.overflow + style.overflowY;
+      if (/auto|scroll/.test(overflow) && el.scrollHeight > el.clientHeight) {
+        el.scrollBy({ top: e.deltaY > 0 ? 300 : -300, behavior: 'smooth' });
+        return;
+      }
+      el = el.parentElement;
+    }
+    window.scrollBy({ top: e.deltaY > 0 ? 300 : -300, behavior: 'smooth' });
+  }, { passive: false });
 
   document.addEventListener('click', function (e) {
     var el = e.target;
