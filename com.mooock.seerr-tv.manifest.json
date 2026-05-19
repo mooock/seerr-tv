@@ -1,0 +1,20 @@
+{
+  "id": "com.mooock.seerr-tv",
+  "version": "1.0.0",
+  "type": "web",
+  "title": "Seerr",
+  "appDescription": "Native webOS wrapper for Jellyseerr/Overseerr with inline YouTube trailer player",
+  "iconUri": "https://raw.githubusercontent.com/mooock/seerr-tv/main/com.mooock.seerr-tv/icon.png",
+  "sourceUrl": "https://github.com/mooock/seerr-tv",
+  "rootRequired": false,
+  "packages": [
+    {
+      "id": "com.mooock.seerr-tv",
+      "version": "1.0.0",
+      "ipkUrl": "https://github.com/mooock/seerr-tv/releases/download/v1.0.0/com.mooock.seerr-tv_1.0.0_all.ipk",
+      "ipkHash": {
+        "sha256": "29910ce4b1e15f97c272856736a000c14454086dd522f043d76ffe0eae1a080f"
+      }
+    }
+  ]
+}
